@@ -2,8 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/db72b1e1-ede1-4f62-9140-7e1a828c77a5
-
+**URL**: mycivicissues.netlify.app
 ## How can I edit this code?
 
 There are several ways of editing your application.
