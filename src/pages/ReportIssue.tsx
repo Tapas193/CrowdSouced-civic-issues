@@ -6,12 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, MapPin, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, Camera, MapPin } from "lucide-react";
 
 const ReportIssue = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -21,6 +20,8 @@ const ReportIssue = () => {
     address: "",
   });
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -42,19 +43,24 @@ const ReportIssue = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
-          toast({
-            title: "Location captured",
-            description: "Your current location has been recorded.",
-          });
+          toast.success("Location captured");
         },
         (error) => {
-          toast({
-            variant: "destructive",
-            title: "Location error",
-            description: "Unable to get your location. Please enter address manually.",
-          });
+          toast.error("Unable to get your location");
         }
       );
+    }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -64,6 +70,28 @@ const ReportIssue = () => {
 
     setLoading(true);
     try {
+      let photoUrl = null;
+
+      if (photo) {
+        const fileExt = photo.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("issue-photos")
+          .upload(fileName, photo);
+
+        if (uploadError) {
+          toast.error("Failed to upload photo");
+          setLoading(false);
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("issue-photos")
+          .getPublicUrl(fileName);
+
+        photoUrl = publicUrl;
+      }
+
       const { error } = await supabase.from("issues").insert([{
         user_id: userId,
         title: formData.title,
@@ -72,28 +100,21 @@ const ReportIssue = () => {
         address: formData.address,
         latitude: location?.lat,
         longitude: location?.lng,
+        photo_url: photoUrl,
         priority_score: 0,
       }]);
 
       if (error) throw error;
 
-      // Award points for first report
       await supabase.rpc("award_points", {
         p_user_id: userId,
         p_points: 10,
       });
 
-      toast({
-        title: "Issue reported!",
-        description: "Thank you for helping improve our community. (+10 points)",
-      });
-      navigate("/");
+      toast.success("Issue reported! +10 points");
+      navigate("/issues");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
+      toast.error(error.message || "Failed to submit issue");
     } finally {
       setLoading(false);
     }
@@ -189,16 +210,33 @@ const ReportIssue = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Photo (Coming Soon)</Label>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled
-            >
-              <Camera className="h-4 w-4 mr-2" />
-              Upload Photo
-            </Button>
+            <Label htmlFor="photo">Photo (Optional)</Label>
+            <div className="mt-2">
+              <input
+                type="file"
+                id="photo"
+                accept="image/*"
+                capture="environment"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => document.getElementById("photo")?.click()}
+                className="w-full"
+              >
+                <Camera className="mr-2 h-4 w-4" />
+                {photo ? "Change Photo" : "Take/Upload Photo"}
+              </Button>
+              {photoPreview && (
+                <img
+                  src={photoPreview}
+                  alt="Preview"
+                  className="mt-4 w-full rounded-lg max-h-64 object-cover"
+                />
+              )}
+            </div>
           </div>
 
           <Button
