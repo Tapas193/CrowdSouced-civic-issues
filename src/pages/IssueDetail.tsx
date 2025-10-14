@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, MapPin, Calendar, ThumbsUp, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import Navigation from "@/components/Navigation";
 
 const IssueDetail = () => {
   const { id } = useParams();
@@ -141,6 +142,7 @@ const IssueDetail = () => {
 
   return (
     <div className="min-h-screen bg-muted">
+      <Navigation />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"

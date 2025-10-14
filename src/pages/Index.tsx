@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Shield, AlertCircle, CheckCircle, Users } from "lucide-react";
+import Navigation from "@/components/Navigation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Navigation />
       {/* Hero Section */}
       <div className="bg-gradient-hero text-white">
         <div className="container mx-auto px-6 py-16">

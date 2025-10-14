@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Filter, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
 
 const IssuesList = () => {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const IssuesList = () => {
 
   return (
     <div className="min-h-screen bg-muted">
+      <Navigation />
       <div className="bg-gradient-hero text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">

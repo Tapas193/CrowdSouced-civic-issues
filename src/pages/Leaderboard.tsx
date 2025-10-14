@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowLeft, Trophy, Medal, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
 
 const Leaderboard = () => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const Leaderboard = () => {
 
   return (
     <div className="min-h-screen bg-muted">
+      <Navigation />
       <div className="bg-gradient-hero text-white p-6">
         <Button
           variant="ghost"

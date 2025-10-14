@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Camera, MapPin } from "lucide-react";
+import Navigation from "@/components/Navigation";
 
 const ReportIssue = () => {
   const navigate = useNavigate();
@@ -122,6 +123,7 @@ const ReportIssue = () => {
 
   return (
     <div className="min-h-screen bg-muted">
+      <Navigation />
       <div className="bg-gradient-hero text-white p-6">
         <Button
           variant="ghost"
