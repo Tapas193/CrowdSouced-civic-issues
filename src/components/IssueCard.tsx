@@ -13,6 +13,7 @@ interface IssueCardProps {
     address?: string;
     upvotes: number;
     created_at: string;
+    assigned_department?: string;
     profiles?: {
       full_name?: string;
     };
@@ -68,10 +69,16 @@ export const IssueCard = ({ issue, onClick }: IssueCardProps) => {
         {issue.description}
       </p>
 
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
         <div className="flex items-center gap-1">
           <Badge variant="outline">{categoryLabels[issue.category]}</Badge>
         </div>
+        
+        {issue.assigned_department && (
+          <Badge variant="secondary" className="bg-civic-blue/20 text-civic-blue border-civic-blue/30">
+            {issue.assigned_department}
+          </Badge>
+        )}
         
         {issue.address && (
           <div className="flex items-center gap-1">

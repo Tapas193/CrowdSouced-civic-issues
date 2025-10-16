@@ -71,6 +71,11 @@ const ReportIssue = () => {
 
     setLoading(true);
     try {
+      // Get AI-assigned department
+      const { data: deptData } = await supabase.functions.invoke('assign-department', {
+        body: { title: formData.title, description: formData.description, category: formData.category }
+      });
+
       let photoUrl = null;
 
       if (photo) {
@@ -103,6 +108,7 @@ const ReportIssue = () => {
         longitude: location?.lng,
         photo_url: photoUrl,
         priority_score: 0,
+        assigned_department: deptData?.department || 'Public Works',
       }]);
 
       if (error) throw error;
@@ -112,7 +118,7 @@ const ReportIssue = () => {
         p_points: 10,
       });
 
-      toast.success("Issue reported! +10 points");
+      toast.success(`Issue reported and assigned to ${deptData?.department || 'Public Works'}! +10 points`);
       navigate("/issues");
     } catch (error: any) {
       toast.error(error.message || "Failed to submit issue");

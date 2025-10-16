@@ -93,6 +93,7 @@ const IssueDetail = () => {
 
       setHasUpvoted(false);
       setIssue({ ...issue, upvotes: newUpvotes });
+      toast.success("Upvote removed successfully!");
     } else {
       await supabase
         .from("issue_upvotes")
@@ -106,7 +107,7 @@ const IssueDetail = () => {
 
       setHasUpvoted(true);
       setIssue({ ...issue, upvotes: newUpvotes });
-      toast.success("Upvoted!");
+      toast.success("Issue upvoted successfully!");
     }
   };
 

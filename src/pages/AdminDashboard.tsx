@@ -121,7 +121,7 @@ const AdminDashboard = () => {
     if (error) {
       toast.error("Failed to update status");
     } else {
-      toast.success("Status updated");
+      toast.success(`Issue status successfully updated to ${newStatus === "in_progress" ? "In Progress" : newStatus}!`);
       fetchIssues();
       fetchStats();
     }
