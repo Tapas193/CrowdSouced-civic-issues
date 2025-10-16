@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, ArrowLeft } from "lucide-react";
+import { Shield, ArrowLeft, Phone, Mail } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -15,6 +16,12 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  
+  // Phone auth states
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
 
   useEffect(() => {
     const checkSession = async () => {
@@ -68,6 +75,53 @@ const Auth = () => {
     }
   };
 
+  const handlePhoneAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (!otpSent) {
+        // Send OTP to phone number
+        const { error } = await supabase.auth.signInWithOtp({
+          phone: phoneNumber,
+        });
+        
+        if (error) throw error;
+        
+        setOtpSent(true);
+        toast({
+          title: "OTP Sent!",
+          description: "Please check your phone for the verification code.",
+        });
+      } else {
+        // Verify OTP
+        const { error } = await supabase.auth.verifyOtp({
+          phone: phoneNumber,
+          token: otp,
+          type: 'sms',
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success!",
+          description: "Successfully authenticated with phone number.",
+        });
+        navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+      setOtpSent(false);
+      setOtp("");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -91,66 +145,141 @@ const Auth = () => {
             </p>
           </div>
 
-          <form onSubmit={handleAuth} className="space-y-4">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                />
+          <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email" | "phone")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                Email
+              </TabsTrigger>
+              <TabsTrigger value="phone" className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                Phone
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="email">
+              <form onSubmit={handleAuth} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required={!isLogin}
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary-hover"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-primary hover:underline text-sm"
+                >
+                  {isLogin
+                    ? "Don't have an account? Sign up"
+                    : "Already have an account? Sign in"}
+                </button>
               </div>
-            )}
+            </TabsContent>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <TabsContent value="phone">
+              <form onSubmit={handlePhoneAuth} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+1234567890"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                    disabled={otpSent}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Include country code (e.g., +1 for US)
+                  </p>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-            </div>
+                {otpSent && (
+                  <div className="space-y-2">
+                    <Label htmlFor="otp">Verification Code</Label>
+                    <Input
+                      id="otp"
+                      type="text"
+                      placeholder="123456"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      required
+                      maxLength={6}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Enter the 6-digit code sent to your phone
+                    </p>
+                  </div>
+                )}
 
-            <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary-hover"
-              disabled={loading}
-            >
-              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-            </Button>
-          </form>
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary-hover"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : otpSent ? "Verify OTP" : "Send OTP"}
+                </Button>
 
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:underline text-sm"
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : "Already have an account? Sign in"}
-            </button>
-          </div>
+                {otpSent && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtp("");
+                    }}
+                  >
+                    Change Phone Number
+                  </Button>
+                )}
+              </form>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
