@@ -227,14 +227,14 @@ const Auth = () => {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+1234567890"
+                    placeholder="+919876543210"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     required
                     disabled={otpSent}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Include country code (e.g., +1 for US)
+                    Include country code (e.g., +91 for India, +1 for US)
                   </p>
                 </div>
 
