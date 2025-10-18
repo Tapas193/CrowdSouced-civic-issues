@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, MapPin, Calendar, ThumbsUp, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
+import SocialShare from "@/components/SocialShare";
 
 const IssueDetail = () => {
   const { id } = useParams();
@@ -193,8 +194,17 @@ const IssueDetail = () => {
             />
           )}
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <span>Reported by {issue.profiles?.full_name || "Anonymous"}</span>
+          </div>
+
+          <div className="border-t pt-4">
+            <p className="text-sm font-semibold mb-2">Share this issue:</p>
+            <SocialShare
+              title={issue.title}
+              description={issue.description}
+              url={window.location.href}
+            />
           </div>
         </Card>
 
