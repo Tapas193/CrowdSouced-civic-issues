@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Shield, LogOut, Home, ListChecks, Trophy, PlusCircle, Map } from "lucide-react";
 import { toast } from "sonner";
+import { NotificationCenter } from "./NotificationCenter";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -116,14 +117,17 @@ const Navigation = () => {
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            onClick={handleLogout}
-            className="text-white hover:bg-white/10"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <NotificationCenter />
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="text-white hover:bg-white/10"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
