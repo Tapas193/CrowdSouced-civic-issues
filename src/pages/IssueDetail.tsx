@@ -4,26 +4,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, MapPin, Calendar, ThumbsUp, MessageSquare } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import SocialShare from "@/components/SocialShare";
 import CommentSection from "@/components/CommentSection";
+import { IssueVoting } from "@/components/IssueVoting";
 
 const IssueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [issue, setIssue] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
-  const [hasUpvoted, setHasUpvoted] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
     fetchIssue();
-    checkUpvote();
   }, [id]);
 
   const fetchIssue = async () => {
@@ -44,58 +42,6 @@ const IssueDetail = () => {
     }
   };
 
-  const checkUpvote = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
-    const { data } = await supabase
-      .from("issue_upvotes")
-      .select("*")
-      .eq("issue_id", id)
-      .eq("user_id", session.user.id)
-      .single();
-
-    setHasUpvoted(!!data);
-  };
-
-  const handleUpvote = async () => {
-    if (!session) {
-      toast.error("Please login to upvote");
-      return;
-    }
-
-    if (hasUpvoted) {
-      await supabase
-        .from("issue_upvotes")
-        .delete()
-        .eq("issue_id", id)
-        .eq("user_id", session.user.id);
-
-      const newUpvotes = Math.max(0, issue.upvotes - 1);
-      await supabase
-        .from("issues")
-        .update({ upvotes: newUpvotes })
-        .eq("id", id);
-
-      setHasUpvoted(false);
-      setIssue({ ...issue, upvotes: newUpvotes });
-      toast.success("Upvote removed successfully!");
-    } else {
-      await supabase
-        .from("issue_upvotes")
-        .insert({ issue_id: id, user_id: session.user.id });
-
-      const newUpvotes = issue.upvotes + 1;
-      await supabase
-        .from("issues")
-        .update({ upvotes: newUpvotes })
-        .eq("id", id);
-
-      setHasUpvoted(true);
-      setIssue({ ...issue, upvotes: newUpvotes });
-      toast.success("Issue upvoted successfully!");
-    }
-  };
 
   if (!issue) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -127,14 +73,10 @@ const IssueDetail = () => {
                 {issue.status}
               </Badge>
             </div>
-            <Button
-              variant={hasUpvoted ? "default" : "outline"}
-              onClick={handleUpvote}
-              className="flex items-center gap-2"
-            >
-              <ThumbsUp className={`h-4 w-4 ${hasUpvoted ? "fill-current" : ""}`} />
-              {issue.upvotes}
-            </Button>
+            <IssueVoting 
+              issueId={id!} 
+              initialUpvotes={issue.upvotes}
+            />
           </div>
 
           <div className="space-y-3 text-muted-foreground mb-4">
