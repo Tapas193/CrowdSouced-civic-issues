@@ -33,6 +33,27 @@ const IssuesList = () => {
 
   useEffect(() => {
     fetchIssues();
+
+    // Subscribe to real-time updates for all issues
+    const channel = supabase
+      .channel('issues-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'issues',
+        },
+        (payload) => {
+          console.log('Issues updated:', payload);
+          fetchIssues();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [filterStatus, filterCategory, filterDepartment, sortBy, searchQuery]);
 
   const fetchDepartments = async () => {

@@ -22,6 +22,28 @@ const IssueDetail = () => {
       setSession(session);
     });
     fetchIssue();
+
+    // Subscribe to real-time updates for this issue
+    const channel = supabase
+      .channel('issue-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'issues',
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          console.log('Issue updated:', payload);
+          fetchIssue();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [id]);
 
   const fetchIssue = async () => {
