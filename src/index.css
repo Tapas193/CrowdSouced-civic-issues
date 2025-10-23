@@ -8,50 +8,50 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 13% 13%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Civic Blue - Trust & Authority */
-    --primary: 217 91% 60%;
+    /* Red - Primary color */
+    --primary: 0 84% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 50%;
+    --primary-hover: 0 84% 50%;
     
-    /* Action Green - Resolution & Progress */
-    --secondary: 142 76% 36%;
+    /* Dark Red - Secondary */
+    --secondary: 0 70% 45%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 142 76% 30%;
+    --secondary-hover: 0 70% 35%;
 
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
 
-    /* Alert Amber - Urgency */
-    --accent: 38 92% 50%;
+    /* Bright Red - Accent */
+    --accent: 0 90% 65%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 84% 60%;
 
     --radius: 0.75rem;
 
     /* Status Colors */
-    --status-pending: 38 92% 50%;
-    --status-in-progress: 217 91% 60%;
-    --status-resolved: 142 76% 36%;
-    --status-rejected: 0 84% 60%;
+    --status-pending: 0 0% 40%;
+    --status-in-progress: 0 84% 60%;
+    --status-resolved: 0 70% 45%;
+    --status-rejected: 0 0% 25%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 76% 36%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 13% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 84% 60%), hsl(0 0% 10%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 10%), hsl(0 0% 12%));
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -59,63 +59,63 @@ All colors MUST be HSL.
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 13% 13%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 84% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 95%;
-    --sidebar-accent-foreground: 220 13% 13%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 84% 60%;
   }
 
   .dark {
-    --background: 220 13% 9%;
+    --background: 0 0% 5%;
     --foreground: 0 0% 98%;
 
-    --card: 220 13% 12%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 13% 12%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 0 90% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 50%;
+    --primary-hover: 0 90% 55%;
 
-    --secondary: 142 76% 36%;
+    --secondary: 0 80% 50%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 142 76% 30%;
+    --secondary-hover: 0 80% 40%;
 
-    --muted: 220 13% 18%;
-    --muted-foreground: 220 9% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 38 92% 50%;
+    --accent: 0 95% 70%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 90% 65%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 18%;
-    --input: 220 13% 18%;
-    --ring: 217 91% 60%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 0 90% 65%;
 
-    --status-pending: 38 92% 50%;
-    --status-in-progress: 217 91% 60%;
-    --status-resolved: 142 76% 36%;
-    --status-rejected: 0 84% 60%;
+    --status-pending: 0 0% 45%;
+    --status-in-progress: 0 90% 65%;
+    --status-resolved: 0 80% 50%;
+    --status-rejected: 0 0% 30%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 76% 36%));
-    --gradient-card: linear-gradient(180deg, hsl(220 13% 12%), hsl(220 13% 15%));
+    --gradient-hero: linear-gradient(135deg, hsl(0 90% 65%), hsl(0 0% 8%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 8%), hsl(0 0% 10%));
 
-    --sidebar-background: 220 13% 12%;
+    --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 0 90% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 18%;
+    --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 13% 18%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 0 90% 65%;
   }
 }
 

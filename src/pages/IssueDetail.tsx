@@ -29,10 +29,10 @@ const IssueDetail = () => {
       .from("issues")
       .select(`
         *,
-        profiles:reporter_id (full_name, avatar_url)
+        profiles:user_id (full_name, avatar_url)
       `)
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       toast.error("Failed to load issue");
