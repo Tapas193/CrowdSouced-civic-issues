@@ -126,5 +126,28 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    cursor: default;
+  }
+}
+
+@layer utilities {
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)];
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20;
+  }
+
+  .button-hover {
+    @apply transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/30 active:scale-95;
   }
 }

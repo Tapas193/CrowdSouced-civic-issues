@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import CursorGlow from "./components/CursorGlow";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import IssuesList from "./pages/IssuesList";
@@ -18,6 +19,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <CursorGlow />
       <Toaster />
       <Sonner />
       <BrowserRouter>
