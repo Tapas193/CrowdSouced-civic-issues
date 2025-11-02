@@ -1,80 +1,24 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Example — Banner with image</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CivicWatch - Community Issue Reporting Platform</title>
+    <meta name="description" content="Report, track, and resolve civic issues in your community. Earn rewards for active participation." />
+    <meta name="author" content="CivicWatch" />
 
-  <!-- Favicon (uses public/favico.ico at site root) -->
-  <link rel="icon" href="/favico.ico" type="image/x-icon" />
+    <meta property="og:title" content="CivicWatch - Community Issue Reporting" />
+    <meta property="og:description" content="Empower your community by reporting and tracking civic issues" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.google.com/imgres?q=image&imgurl=https%3A%2F%2Fcdn.prod.website-files.com%2F62d84e447b4f9e7263d31e94%2F6399a4d27711a5ad2c9bf5cd_ben-sweet-2LowviVHZ-E-unsplash-1.jpeg&imgrefurl=https%3A%2F%2Fwww.pixsy.com%2Fblog&docid=1MgDQCkAVW6q5M&tbnid=HXLlNEpHoJATkM&vet=12ahUKEwiOht2C09OQAxX-bmwGHa_KGc4QM3oECGoQAA..i&w=1920&h=1080&hcb=2&ved=2ahUKEwiOht2C09OQAxX-bmwGHa_KGc4QM3oECGoQAA" />
 
-  <!-- Optional: better favicon formats for modern browsers -->
-  <!-- <link rel="icon" href="/favicon-32x32.png" sizes="32x32" /> -->
-  <style>
-    /* Basic styles for the banner */
-    .site-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem;
-      background: #0d47a1; /* fallback color */
-      color: #fff;
-    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@civicwatch" />
+    <meta name="twitter:image" content="https://th.bing.com/th/id/OIP.NU9zscMHAn83CpLA9fDjrgHaHa?o=7&cb=12rm=3&rs=1&pid=ImgDetMain&o=7&rm=3" />
+  </head>
 
-    /* Option A: banner using an <img> tag */
-    .banner-logo {
-      height: 64px;        /* scale to taste */
-      width: auto;
-      object-fit: contain;
-    }
-
-    /* Option B: banner using background image */
-    .banner-bg {
-      height: 200px;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      color: white;
-      padding: 1rem;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    /* Make banner responsive */
-    @media (max-width: 600px) {
-      .banner-bg { height: 120px; font-size: 1.1rem; }
-      .banner-logo { height: 48px; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Header with image tag (Option A) -->
-  <header class="site-banner" role="banner">
-    <div style="display:flex; align-items:center;">
-      <!-- If you want to use your ICO directly (not ideal for large images) -->
-      <img src="/favico.ico" alt="Site logo" class="banner-logo">
-      <div style="margin-left:12px;">
-        <div>My Site Name</div>
-        <div style="font-size:0.9rem; opacity:0.9;">Short tagline</div>
-      </div>
-    </div>
-
-    <nav aria-label="Main navigation">
-      <a href="/" style="color:#fff; margin-right:12px;">Home</a>
-      <a href="/about" style="color:#fff;">About</a>
-    </nav>
-  </header>
-
-  <main>
-    <!-- Option B: banner using background-image (better for large decorative banner) -->
-    <section class="banner-bg" style="background-image: url('/favico.ico');">
-      Welcome to the site — decorative banner using the same image as background.
-    </section>
-
-    <p>Page content goes here.</p>
-  </main>
-</body>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
