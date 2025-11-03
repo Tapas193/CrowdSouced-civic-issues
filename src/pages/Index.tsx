@@ -86,7 +86,7 @@ const Index = () => {
                     size="lg"
                     variant="outline"
                     onClick={() => navigate("/issues")}
-                    className="border-white text-white hover:bg-white/10"
+                    className="border-white text-white hover:bg-white/10 bg-transparent"
                   >
                     Browse Issues
                   </Button>
