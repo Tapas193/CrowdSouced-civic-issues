@@ -14,6 +14,32 @@ serve(async (req) => {
 
   try {
     const { title, description, category } = await req.json();
+    
+    // Sanitize inputs to prevent prompt injection
+    const sanitizeInput = (input: string): string => {
+      if (!input) return '';
+      // Remove potential prompt injection patterns and limit length
+      return input
+        .replace(/ignore\s+previous\s+instructions/gi, '')
+        .replace(/system\s*:/gi, '')
+        .replace(/assistant\s*:/gi, '')
+        .replace(/user\s*:/gi, '')
+        .substring(0, 1000)
+        .trim();
+    };
+
+    const sanitizedTitle = sanitizeInput(title);
+    const sanitizedDescription = sanitizeInput(description);
+    const sanitizedCategory = sanitizeInput(category);
+
+    // Validate input lengths
+    if (sanitizedTitle.length > 200 || sanitizedDescription.length > 2000) {
+      return new Response(
+        JSON.stringify({ department: 'Public Works' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -22,9 +48,9 @@ serve(async (req) => {
 
     const prompt = `Analyze this civic issue and assign it to the most appropriate department. 
     
-Title: ${title}
-Description: ${description}
-Category: ${category}
+Title: ${sanitizedTitle}
+Description: ${sanitizedDescription}
+Category: ${sanitizedCategory}
 
 Available departments:
 - Public Works (roads, infrastructure, utilities)

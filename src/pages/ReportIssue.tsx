@@ -9,6 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { ArrowLeft, Camera, MapPin } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { z } from "zod";
+
+const issueSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  description: z.string().trim().min(1, "Description is required").max(2000, "Description must be less than 2000 characters"),
+  category: z.string().min(1, "Category is required"),
+  address: z.string().trim().max(500, "Address must be less than 500 characters").optional(),
+});
 
 const ReportIssue = () => {
   const navigate = useNavigate();
@@ -69,11 +77,20 @@ const ReportIssue = () => {
     e.preventDefault();
     if (!userId) return;
 
+    // Validate inputs
+    const validationResult = issueSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError.message);
+      return;
+    }
+
     setLoading(true);
     try {
+      const validData = validationResult.data;
       // Get AI-assigned department
       const { data: deptData } = await supabase.functions.invoke('assign-department', {
-        body: { title: formData.title, description: formData.description, category: formData.category }
+        body: { title: validData.title, description: validData.description, category: validData.category }
       });
 
       let photoUrl = null;
@@ -100,10 +117,10 @@ const ReportIssue = () => {
 
       const { error } = await supabase.from("issues").insert([{
         user_id: userId,
-        title: formData.title,
-        description: formData.description,
-        category: formData.category as any,
-        address: formData.address,
+        title: validData.title,
+        description: validData.description,
+        category: validData.category as any,
+        address: validData.address || "",
         latitude: location?.lat,
         longitude: location?.lng,
         photo_url: photoUrl,

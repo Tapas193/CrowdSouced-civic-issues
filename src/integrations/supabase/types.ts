@@ -48,7 +48,7 @@ export type Database = {
           id: string
           issue_id: string
           status: Database["public"]["Enums"]["issue_status"]
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           comment?: string | null
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           issue_id: string
           status: Database["public"]["Enums"]["issue_status"]
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           comment?: string | null
@@ -64,7 +64,7 @@ export type Database = {
           id?: string
           issue_id?: string
           status?: Database["public"]["Enums"]["issue_status"]
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -314,6 +314,13 @@ export type Database = {
       award_points: {
         Args: { p_points: number; p_user_id: string }
         Returns: undefined
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

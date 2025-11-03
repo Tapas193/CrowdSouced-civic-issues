@@ -15,6 +15,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { z } from "zod";
+
+const commentSchema = z.object({
+  comment: z.string().trim().min(1, "Comment cannot be empty").max(1000, "Comment must be less than 1000 characters"),
+});
 
 interface Comment {
   id: string;
@@ -82,8 +87,15 @@ const CommentSection = ({ issueId, session }: CommentSectionProps) => {
   };
 
   const handleAddComment = async () => {
-    if (!session || !newComment.trim()) {
-      toast.error("Please write a comment");
+    if (!session) {
+      toast.error("Please log in to comment");
+      return;
+    }
+
+    // Validate comment
+    const validationResult = commentSchema.safeParse({ comment: newComment });
+    if (!validationResult.success) {
+      toast.error(validationResult.error.errors[0].message);
       return;
     }
 
@@ -93,7 +105,7 @@ const CommentSection = ({ issueId, session }: CommentSectionProps) => {
       .insert({
         issue_id: issueId,
         user_id: session.user.id,
-        comment: newComment.trim(),
+        comment: validationResult.data.comment,
         status: "pending",
       });
 
@@ -108,12 +120,17 @@ const CommentSection = ({ issueId, session }: CommentSectionProps) => {
   };
 
   const handleEditComment = async (commentId: string) => {
-    if (!editText.trim()) return;
+    // Validate comment
+    const validationResult = commentSchema.safeParse({ comment: editText });
+    if (!validationResult.success) {
+      toast.error(validationResult.error.errors[0].message);
+      return;
+    }
 
     setLoading(true);
     const { error } = await supabase
       .from("issue_updates")
-      .update({ comment: editText.trim() })
+      .update({ comment: validationResult.data.comment })
       .eq("id", commentId);
 
     if (error) {
