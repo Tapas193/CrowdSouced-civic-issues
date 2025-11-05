@@ -29,8 +29,7 @@ const App = () => (
           <Route path="/report" element={<ReportIssue />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/map" element={<MapView />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/map" element={<MapView />} />        
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
