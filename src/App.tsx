@@ -10,7 +10,6 @@ import IssueDetail from "./pages/IssueDetail";
 import ReportIssue from "./pages/ReportIssue";
 import Leaderboard from "./pages/Leaderboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import MapView from "./pages/MapView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,11 +24,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/issues" element={<IssuesList />} />
+          <Route path="/issue/:id" element={<IssueDetail />} />
           <Route path="/issues/:id" element={<IssueDetail />} />
           <Route path="/report" element={<ReportIssue />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/map" element={<MapView />} />        
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
