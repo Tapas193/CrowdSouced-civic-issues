@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Shield, LogOut, Home, ListChecks, Trophy, PlusCircle, Map } from "lucide-react";
+import { Shield, LogOut, Home, ListChecks, Trophy, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
 
@@ -95,14 +95,6 @@ const Navigation = () => {
               >
                 <Trophy className="mr-2 h-4 w-4" />
                 Leaderboard
-              </Button>
-              <Button
-                variant={location.pathname === "/map" ? "secondary" : "ghost"}
-                onClick={() => navigate("/map")}
-                className="text-white hover:bg-white/10"
-              >
-                <Map className="mr-2 h-4 w-4" />
-                Map
               </Button>
               {isAdmin && (
                 <Button
