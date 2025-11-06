@@ -31,6 +31,8 @@ const ReportIssue = () => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [imageAnalysis, setImageAnalysis] = useState<{ verdict: string; explanation: string } | null>(null);
+  const [analyzingImage, setAnalyzingImage] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -61,15 +63,64 @@ const ReportIssue = () => {
     }
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setPhoto(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        setPhotoPreview(base64);
+        
+        // Analyze image if form has content
+        if (formData.title && formData.description && formData.category) {
+          await analyzeImage(base64);
+        }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const analyzeImage = async (imageBase64: string) => {
+    if (!formData.title || !formData.description || !formData.category) {
+      return;
+    }
+
+    setAnalyzingImage(true);
+    setImageAnalysis(null);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-issue-image', {
+        body: {
+          imageBase64,
+          title: formData.title,
+          description: formData.description,
+          category: formData.category
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.analysis) {
+        setImageAnalysis(data.analysis);
+        
+        if (data.analysis.verdict === 'appropriate') {
+          toast.success('✓ Image looks good!');
+        } else if (data.analysis.verdict === 'unclear') {
+          toast('⚠️ Image quality could be better', {
+            description: data.analysis.explanation
+          });
+        } else if (data.analysis.verdict === 'irrelevant') {
+          toast.error('⚠️ Image may not match the issue', {
+            description: data.analysis.explanation
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error('Image analysis error:', error);
+      toast.error('Could not analyze image');
+    } finally {
+      setAnalyzingImage(false);
     }
   };
 
@@ -255,11 +306,44 @@ const ReportIssue = () => {
                 {photo ? "Change Photo" : "Take/Upload Photo"}
               </Button>
               {photoPreview && (
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="mt-4 w-full rounded-lg max-h-64 object-cover"
-                />
+                <div className="mt-4 space-y-3">
+                  <div className="relative">
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-full rounded-lg max-h-64 object-cover"
+                    />
+                    {analyzingImage && (
+                      <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                        <div className="text-white text-sm">Analyzing image...</div>
+                      </div>
+                    )}
+                  </div>
+                  {imageAnalysis && (
+                    <div className={`p-3 rounded-lg border ${
+                      imageAnalysis.verdict === 'appropriate' 
+                        ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                        : imageAnalysis.verdict === 'unclear'
+                        ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800'
+                        : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
+                    }`}>
+                      <p className={`text-sm font-medium ${
+                        imageAnalysis.verdict === 'appropriate' 
+                          ? 'text-green-800 dark:text-green-200'
+                          : imageAnalysis.verdict === 'unclear'
+                          ? 'text-yellow-800 dark:text-yellow-200'
+                          : 'text-red-800 dark:text-red-200'
+                      }`}>
+                        {imageAnalysis.verdict === 'appropriate' && '✓ Image verified'}
+                        {imageAnalysis.verdict === 'unclear' && '⚠️ Image unclear'}
+                        {imageAnalysis.verdict === 'irrelevant' && '✗ Image may not match issue'}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {imageAnalysis.explanation}
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

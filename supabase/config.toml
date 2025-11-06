@@ -2,3 +2,6 @@ project_id = "eyjlfdynooipghdvqapo"
 
 [functions.assign-department]
 verify_jwt = false
+
+[functions.analyze-issue-image]
+verify_jwt = false
