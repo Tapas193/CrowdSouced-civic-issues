@@ -37,7 +37,7 @@ const Navigation = () => {
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
 
     setIsAdmin(data?.role === "admin");
   };
@@ -64,38 +64,42 @@ const Navigation = () => {
             </button>
             
             <div className="hidden md:flex items-center gap-2">
-              <Button
-                variant={location.pathname === "/" ? "secondary" : "ghost"}
-                onClick={() => navigate("/")}
-                className="text-white hover:bg-white/10"
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-              <Button
-                variant={location.pathname === "/issues" ? "secondary" : "ghost"}
-                onClick={() => navigate("/issues")}
-                className="text-white hover:bg-white/10"
-              >
-                <ListChecks className="mr-2 h-4 w-4" />
-                Issues
-              </Button>
-              <Button
-                variant={location.pathname === "/report" ? "secondary" : "ghost"}
-                onClick={() => navigate("/report")}
-                className="text-white hover:bg-white/10"
-              >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Report
-              </Button>
-              <Button
-                variant={location.pathname === "/leaderboard" ? "secondary" : "ghost"}
-                onClick={() => navigate("/leaderboard")}
-                className="text-white hover:bg-white/10"
-              >
-                <Trophy className="mr-2 h-4 w-4" />
-                Leaderboard
-              </Button>
+              {!isAdmin && (
+                <>
+                  <Button
+                    variant={location.pathname === "/" ? "secondary" : "ghost"}
+                    onClick={() => navigate("/")}
+                    className="text-white hover:bg-white/10"
+                  >
+                    <Home className="mr-2 h-4 w-4" />
+                    Home
+                  </Button>
+                  <Button
+                    variant={location.pathname === "/issues" ? "secondary" : "ghost"}
+                    onClick={() => navigate("/issues")}
+                    className="text-white hover:bg-white/10"
+                  >
+                    <ListChecks className="mr-2 h-4 w-4" />
+                    Issues
+                  </Button>
+                  <Button
+                    variant={location.pathname === "/report" ? "secondary" : "ghost"}
+                    onClick={() => navigate("/report")}
+                    className="text-white hover:bg-white/10"
+                  >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Report
+                  </Button>
+                  <Button
+                    variant={location.pathname === "/leaderboard" ? "secondary" : "ghost"}
+                    onClick={() => navigate("/leaderboard")}
+                    className="text-white hover:bg-white/10"
+                  >
+                    <Trophy className="mr-2 h-4 w-4" />
+                    Leaderboard
+                  </Button>
+                </>
+              )}
               {isAdmin && (
                 <Button
                   variant={location.pathname === "/admin" ? "secondary" : "ghost"}
@@ -103,7 +107,7 @@ const Navigation = () => {
                   className="text-white hover:bg-white/10"
                 >
                   <Shield className="mr-2 h-4 w-4" />
-                  Admin
+                  Admin Dashboard
                 </Button>
               )}
             </div>

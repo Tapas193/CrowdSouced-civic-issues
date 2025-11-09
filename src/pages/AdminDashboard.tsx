@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Shield, TrendingUp, AlertCircle, CheckCircle, X } from "lucide-react";
+import { Shield, TrendingUp, AlertCircle, CheckCircle, X, Clock, Play } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
     pending: 0,
     inProgress: 0,
     resolved: 0,
+    rejected: 0,
   });
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -80,37 +82,28 @@ const AdminDashboard = () => {
       .select("*", { count: "exact", head: true })
       .eq("status", "resolved");
 
+    const { count: rejected } = await supabase
+      .from("issues")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "rejected");
+
     setStats({
       total: total || 0,
       pending: pending || 0,
       inProgress: inProgress || 0,
       resolved: resolved || 0,
+      rejected: rejected || 0,
     });
   };
 
-  const markAsCompleted = async (issueId: string) => {
-    const { error } = await supabase
-      .from("issues")
-      .update({ 
-        status: "resolved",
-        resolved_at: new Date().toISOString()
-      })
-      .eq("id", issueId);
-
-    if (error) {
-      toast.error("Failed to mark as completed");
-    } else {
-      toast.success("Issue marked as completed!");
-      fetchIssues();
-      fetchStats();
-    }
-  };
 
   const updateStatus = async (issueId: string, newStatus: "pending" | "in_progress" | "resolved" | "rejected") => {
     const updateData: any = { status: newStatus };
     
     if (newStatus === "resolved") {
       updateData.resolved_at = new Date().toISOString();
+    } else {
+      updateData.resolved_at = null;
     }
 
     const { error } = await supabase
@@ -121,7 +114,8 @@ const AdminDashboard = () => {
     if (error) {
       toast.error("Failed to update status");
     } else {
-      toast.success(`Issue status successfully updated to ${newStatus === "in_progress" ? "In Progress" : newStatus}!`);
+      const statusLabel = newStatus === "in_progress" ? "In Progress" : newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+      toast.success(`Issue status updated to ${statusLabel}`);
       fetchIssues();
       fetchStats();
     }
@@ -145,7 +139,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -180,6 +174,15 @@ const AdminDashboard = () => {
                 <p className="text-3xl font-bold">{stats.resolved}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-status-resolved" />
+            </div>
+          </Card>
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Rejected</p>
+                <p className="text-3xl font-bold">{stats.rejected}</p>
+              </div>
+              <X className="h-8 w-8 text-status-rejected" />
             </div>
           </Card>
         </div>
@@ -225,46 +228,62 @@ const AdminDashboard = () => {
                       {new Date(issue.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        className={
-                          issue.status === "pending" ? "bg-status-pending" :
-                          issue.status === "in_progress" ? "bg-status-progress" :
-                          issue.status === "resolved" ? "bg-status-resolved" :
-                          "bg-status-rejected"
+                      <Select
+                        value={issue.status}
+                        onValueChange={(value: "pending" | "in_progress" | "resolved" | "rejected") => 
+                          updateStatus(issue.id, value)
                         }
                       >
-                        {issue.status === "in_progress" ? "In Progress" : issue.status}
-                      </Badge>
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue>
+                            <Badge 
+                              className={
+                                issue.status === "pending" ? "bg-status-pending" :
+                                issue.status === "in_progress" ? "bg-status-progress" :
+                                issue.status === "resolved" ? "bg-status-resolved" :
+                                "bg-status-rejected"
+                              }
+                            >
+                              {issue.status === "in_progress" ? "In Progress" : issue.status}
+                            </Badge>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-status-pending" />
+                              Pending
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="in_progress">
+                            <div className="flex items-center gap-2">
+                              <Play className="h-4 w-4 text-status-progress" />
+                              In Progress
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="resolved">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-status-resolved" />
+                              Resolved
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="rejected">
+                            <div className="flex items-center gap-2">
+                              <X className="h-4 w-4 text-status-rejected" />
+                              Rejected
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/issues/${issue.id}`)}
-                        >
-                          View
-                        </Button>
-                        {issue.status !== "resolved" && (
-                          <Button
-                            size="sm"
-                            variant="default"
-                            onClick={() => updateStatus(issue.id, "resolved")}
-                            className="bg-status-resolved hover:bg-status-resolved/90"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {issue.status !== "rejected" && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => updateStatus(issue.id, "rejected")}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/issues/${issue.id}`)}
+                      >
+                        View Details
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
