@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Shield, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
+import { Shield, TrendingUp, AlertCircle, CheckCircle, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -186,75 +186,90 @@ const AdminDashboard = () => {
 
         <Card className="p-6">
           <h2 className="text-2xl font-bold mb-6">All Issues</h2>
-          <div className="space-y-4">
-            {issues.map((issue) => (
-              <div
-                key={issue.id}
-                className="border rounded-lg p-4 hover:bg-accent/5 transition-colors"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex items-center pt-1">
-                    <Checkbox
-                      checked={issue.status === "resolved"}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          markAsCompleted(issue.id);
-                        }
-                      }}
-                      className="h-5 w-5"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h3 className={`font-semibold text-lg ${issue.status === "resolved" ? "line-through text-muted-foreground" : ""}`}>
-                          {issue.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          Reported by {issue.profiles?.full_name || "Anonymous"} •{" "}
-                          {new Date(issue.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <Badge>{issue.category}</Badge>
-                        <Badge 
-                          className={
-                            issue.status === "pending" ? "bg-status-pending" :
-                            issue.status === "in_progress" ? "bg-status-inProgress" :
-                            issue.status === "resolved" ? "bg-status-resolved" :
-                            "bg-status-rejected"
-                          }
-                        >
-                          {issue.status === "in_progress" ? "In Progress" : issue.status}
-                        </Badge>
-                      </div>
-                    </div>
-                    <p className={`text-muted-foreground mb-3 ${issue.status === "resolved" ? "line-through" : ""}`}>
-                      {issue.description}
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/issues/${issue.id}`)}
-                      >
-                        View Details
-                      </Button>
-                      {issue.status !== "resolved" && (
-                        <Button
-                          size="sm"
-                          onClick={() => markAsCompleted(issue.id)}
-                          className="bg-status-resolved hover:bg-status-resolved/90"
-                        >
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Mark as Completed
-                        </Button>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Reporter</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {issues.map((issue) => (
+                  <TableRow key={issue.id}>
+                    <TableCell className="font-medium max-w-xs">
+                      <div className="truncate">{issue.title}</div>
+                      <div className="text-sm text-muted-foreground truncate">{issue.description}</div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{issue.category}</Badge>
+                    </TableCell>
+                    <TableCell>{issue.profiles?.full_name || "Anonymous"}</TableCell>
+                    <TableCell className="max-w-xs">
+                      {issue.address ? (
+                        <span className="truncate block">{issue.address}</span>
+                      ) : issue.latitude && issue.longitude ? (
+                        <span className="text-xs text-muted-foreground">
+                          {issue.latitude.toFixed(4)}, {issue.longitude.toFixed(4)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
                       )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {new Date(issue.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        className={
+                          issue.status === "pending" ? "bg-status-pending" :
+                          issue.status === "in_progress" ? "bg-status-progress" :
+                          issue.status === "resolved" ? "bg-status-resolved" :
+                          "bg-status-rejected"
+                        }
+                      >
+                        {issue.status === "in_progress" ? "In Progress" : issue.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/issues/${issue.id}`)}
+                        >
+                          View
+                        </Button>
+                        {issue.status !== "resolved" && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => updateStatus(issue.id, "resolved")}
+                            className="bg-status-resolved hover:bg-status-resolved/90"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {issue.status !== "rejected" && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => updateStatus(issue.id, "rejected")}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </Card>
       </div>

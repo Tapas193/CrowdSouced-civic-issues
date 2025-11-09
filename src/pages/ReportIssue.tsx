@@ -41,6 +41,20 @@ const ReportIssue = () => {
         navigate("/auth");
         return;
       }
+
+      // Check if user is admin
+      const { data: role } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (role?.role === "admin") {
+        toast.error("Admins cannot report issues");
+        navigate("/admin");
+        return;
+      }
+
       setUserId(session.user.id);
     };
     checkAuth();
@@ -303,7 +317,7 @@ const ReportIssue = () => {
                 className="w-full"
               >
                 <Camera className="mr-2 h-4 w-4" />
-                {photo ? "Change Photo" : "Take/Upload Photo"}
+                {photo ? "Retake Photo" : "Take Photo"}
               </Button>
               {photoPreview && (
                 <div className="mt-4 space-y-3">
